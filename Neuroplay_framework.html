@@ -2,326 +2,381 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>NeuroPlay – Mouse Challenge & Visual Search</title>
+<title>NeuroPlay – Mouse, Visual Search, Task Switching</title>
 
 <style>
-    :root {
-        --bg-main: #050814;
-        --bg-panel: #0b1020;
-        --bg-game: #050814;
-        --accent: #00eaff;
-        --accent-soft: #00bcd4;
-        --text-main: #e5f7ff;
-        --text-muted: #7f9bb3;
-        --danger: #ff4b81;
-        --success: #00ff95;
-    }
+:root {
+    --bg-main: #050814;
+    --bg-panel: #0b1020;
+    --bg-game: #050814;
+    --accent: #00eaff;
+    --accent-soft: #00bcd4;
+    --text-main: #e5f7ff;
+    --text-muted: #7f9bb3;
+    --danger: #ff4b81;
+    --success: #00ff95;
+    --yellow: #ffe066;
+}
 
-    * { box-sizing: border-box; }
+* { box-sizing: border-box; }
 
-    body {
-        margin: 0;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
-        background: radial-gradient(circle at top, #0b1530 0, #02030a 55%, #000000 100%);
-        color: var(--text-main);
-    }
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+    background: radial-gradient(circle at top, #0b1530 0, #02030a 55%, #000000 100%);
+    color: var(--text-main);
+}
 
-    header {
-        width: 100%;
-        background: rgba(5, 10, 25, 0.95);
-        border-bottom: 1px solid rgba(0, 234, 255, 0.25);
-        box-shadow: 0 0 20px rgba(0, 234, 255, 0.15);
-        padding: 12px 24px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        position: relative;
-        z-index: 10;
-    }
+header {
+    width: 100%;
+    background: rgba(5, 10, 25, 0.95);
+    border-bottom: 1px solid rgba(0, 234, 255, 0.25);
+    box-shadow: 0 0 20px rgba(0, 234, 255, 0.15);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    z-index: 10;
+}
 
-    .title {
-        font-size: 22px;
-        font-weight: 700;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        color: var(--accent);
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
+.title {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
 
-    .logo-dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 999px;
-        background: var(--accent);
-        box-shadow: 0 0 10px var(--accent);
-    }
+.logo-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: var(--accent);
+    box-shadow: 0 0 10px var(--accent);
+}
 
-    .status {
-        font-size: 14px;
-        color: var(--text-muted);
-    }
+.status {
+    font-size: 14px;
+    color: var(--text-muted);
+}
+.status span {
+    color: var(--accent-soft);
+    font-weight: 600;
+}
 
-    .status span {
-        color: var(--accent-soft);
-        font-weight: 600;
-    }
+.main-layout {
+    display: flex;
+    height: calc(100vh - 60px);
+}
 
-    .main-layout {
-        display: flex;
-        height: calc(100vh - 60px);
-    }
+aside {
+    width: 360px;
+    background: linear-gradient(180deg, #050814 0%, #050814 40%, #050814 100%);
+    border-right: 1px solid rgba(0, 234, 255, 0.2);
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.6);
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
 
-    aside {
-        width: 340px;
-        background: linear-gradient(180deg, #050814 0%, #050814 40%, #050814 100%);
-        border-right: 1px solid rgba(0, 234, 255, 0.2);
-        box-shadow: 10px 0 30px rgba(0, 0, 0, 0.6);
-        padding: 16px 18px;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-    }
+.panel-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
 
-    .panel-title {
-        font-size: 18px;
-        font-weight: 600;
-        margin-bottom: 4px;
-    }
+.panel-subtitle {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+}
 
-    .panel-subtitle {
-        font-size: 12px;
-        color: var(--text-muted);
-        margin-bottom: 12px;
-    }
+.param-group { margin-bottom: 10px; }
 
-    .param-group { margin-bottom: 10px; }
+.param-label {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 4px;
+}
 
-    .param-label {
-        display: block;
-        font-size: 13px;
-        margin-bottom: 4px;
-    }
+.param-input, .select-input {
+    width: 100%;
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(127, 155, 179, 0.6);
+    background: rgba(5, 10, 25, 0.8);
+    color: var(--text-main);
+    font-size: 13px;
+    outline: none;
+    transition: border 0.15s, box-shadow 0.15s, background 0.15s;
+}
 
-    .param-input, .select-input {
-        width: 100%;
-        padding: 6px 8px;
-        border-radius: 6px;
-        border: 1px solid rgba(127, 155, 179, 0.6);
-        background: rgba(5, 10, 25, 0.8);
-        color: var(--text-main);
-        font-size: 13px;
-        outline: none;
-        transition: border 0.15s, box-shadow 0.15s, background 0.15s;
-    }
+.param-input:focus, .select-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 8px rgba(0, 234, 255, 0.4);
+    background: rgba(5, 10, 25, 0.95);
+}
 
-    .param-input:focus, .select-input:focus {
-        border-color: var(--accent);
-        box-shadow: 0 0 8px rgba(0, 234, 255, 0.4);
-        background: rgba(5, 10, 25, 0.95);
-    }
+.btn {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--accent);
+    background: radial-gradient(circle at top, #10253a 0, #050814 60%);
+    color: var(--text-main);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+}
+.btn:hover {
+    background: radial-gradient(circle at top, #16324a 0, #050814 60%);
+    box-shadow: 0 0 12px rgba(0, 234, 255, 0.6);
+    transform: translateY(-1px);
+}
+.btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 0 6px rgba(0, 234, 255, 0.4);
+}
 
-    .btn {
-        width: 100%;
-        padding: 10px 12px;
-        border-radius: 999px;
-        border: 1px solid var(--accent);
-        background: radial-gradient(circle at top, #10253a 0, #050814 60%);
-        color: var(--text-main);
-        font-size: 14px;
-        font-weight: 600;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        cursor: pointer;
-        margin-top: 8px;
-        transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
-    }
+.small-text {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 6px;
+    line-height: 1.4;
+}
 
-    .btn:hover {
-        background: radial-gradient(circle at top, #16324a 0, #050814 60%);
-        box-shadow: 0 0 12px rgba(0, 234, 255, 0.6);
-        transform: translateY(-1px);
-    }
+.data-export {
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid rgba(0, 234, 255, 0.15);
+    font-size: 12px;
+    color: var(--text-muted);
+}
+.data-export button {
+    margin-top: 6px;
+    width: 100%;
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(0, 234, 255, 0.4);
+    background: rgba(5, 10, 25, 0.9);
+    color: var(--accent-soft);
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.15s, box-shadow 0.15s;
+}
+.data-export button:hover {
+    background: rgba(10, 20, 40, 0.95);
+    box-shadow: 0 0 8px rgba(0, 234, 255, 0.4);
+}
 
-    .btn:active {
-        transform: translateY(1px);
-        box-shadow: 0 0 6px rgba(0, 234, 255, 0.4);
-    }
+#gameArea {
+    flex: 1;
+    position: relative;
+    background: radial-gradient(circle at center, #050814 0, #02030a 55%, #000000 100%);
+    overflow: hidden;
+    cursor: none !important;
+}
+#gameInner {
+    cursor: none !important;
+}
 
-    .small-text {
-        font-size: 11px;
-        color: var(--text-muted);
-        margin-top: 6px;
-        line-height: 1.4;
-    }
+#gameArea::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(#10192b 1px, transparent 1px),
+        linear-gradient(90deg, #10192b 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.35;
+    pointer-events: none;
+}
+#gameArea::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 1px solid rgba(0, 234, 255, 0.35);
+    box-shadow: 0 0 25px rgba(0, 234, 255, 0.25);
+    pointer-events: none;
+}
 
-    .data-export {
-        margin-top: auto;
-        padding-top: 10px;
-        border-top: 1px solid rgba(0, 234, 255, 0.15);
-        font-size: 12px;
-        color: var(--text-muted);
-    }
+.game-inner {
+    position: absolute;
+    inset: 20px;
+}
 
-    .data-export button {
-        margin-top: 6px;
-        width: 100%;
-        padding: 6px 8px;
-        border-radius: 6px;
-        border: 1px solid rgba(0, 234, 255, 0.4);
-        background: rgba(5, 10, 25, 0.9);
-        color: var(--accent-soft);
-        font-size: 12px;
-        cursor: pointer;
-        transition: background 0.15s, box-shadow 0.15s;
-    }
+.cursor-neuro {
+    width: 14px;
+    height: 14px;
+    border-radius: 999px;
+    background: var(--accent);
+    box-shadow: 0 0 12px rgba(0, 234, 255, 0.9);
+    position: absolute;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    z-index: 5;
+}
 
-    .data-export button:hover {
-        background: rgba(10, 20, 40, 0.95);
-        box-shadow: 0 0 8px rgba(0, 234, 255, 0.4);
-    }
+/* Estímulos Mouse Challenge */
+.stim {
+    width: 56px;
+    height: 56px;
+    border-radius: 999px;
+    background: radial-gradient(circle at top, #1f4060 0, #0b1724 60%);
+    border: 1px solid rgba(0, 234, 255, 0.7);
+    color: var(--text-main);
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    cursor: pointer;
+    box-shadow: 0 0 12px rgba(0, 234, 255, 0.4);
+    transition: transform 0.1s, box-shadow 0.15s, background 0.15s;
+}
+.stim:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 18px rgba(0, 234, 255, 0.7);
+}
+.stim.correct {
+    background: radial-gradient(circle at top, #1b5e20 0, #0b2410 60%);
+    border-color: var(--success);
+    box-shadow: 0 0 16px rgba(0, 255, 149, 0.8);
+}
+.stim.error {
+    background: radial-gradient(circle at top, #7f1d32 0, #2b0b14 60%);
+    border-color: var(--danger);
+    box-shadow: 0 0 16px rgba(255, 75, 129, 0.8);
+}
 
-    #gameArea {
-        flex: 1;
-        position: relative;
-        background: radial-gradient(circle at center, #050814 0, #02030a 55%, #000000 100%);
-        overflow: hidden;
-    }
+/* Estímulos Visual Search */
+.vs-stim {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: 1px solid rgba(0, 234, 255, 0.5);
+    box-shadow: 0 0 10px rgba(0, 234, 255, 0.4);
+    position: absolute;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.15s;
+}
+.vs-stim:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 16px rgba(0, 234, 255, 0.7);
+}
+.vs-target {
+    box-shadow: 0 0 16px rgba(0, 255, 149, 0.9);
+}
+.vs-correct {
+    outline: 2px solid var(--success);
+}
+.vs-error {
+    outline: 2px solid var(--danger);
+}
 
-    #gameArea::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background-image:
-            linear-gradient(#10192b 1px, transparent 1px),
-            linear-gradient(90deg, #10192b 1px, transparent 1px);
-        background-size: 40px 40px;
-        opacity: 0.35;
-        pointer-events: none;
-    }
+/* Task Switching */
+.ts-stim-container {
+    position: absolute;
+    inset: 40px 40px 80px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.ts-frame {
+    width: 160px;
+    height: 160px;
+    border-radius: 18px;
+    border: 3px solid var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 20px rgba(0,234,255,0.5);
+}
+.ts-frame.color-rule {
+    border-color: var(--danger);
+    box-shadow: 0 0 20px rgba(255,75,129,0.6);
+}
+.ts-stim {
+    width: 80px;
+    height: 80px;
+    border-radius: 999px;
+    background: #00eaff;
+    box-shadow: 0 0 16px rgba(0,234,255,0.8);
+}
+.ts-stim.square {
+    border-radius: 16px;
+}
+.ts-buttons {
+    position: absolute;
+    left: 40px;
+    right: 40px;
+    bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+.ts-btn {
+    flex: 1;
+    padding: 8px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(0,234,255,0.6);
+    background: rgba(5,10,25,0.9);
+    color: var(--text-main);
+    font-size: 12px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    transition: background 0.15s, box-shadow 0.15s, transform 0.1s;
+}
+.ts-btn:hover {
+    background: rgba(10,20,40,0.95);
+    box-shadow: 0 0 10px rgba(0,234,255,0.5);
+    transform: translateY(-1px);
+}
+.ts-btn:active {
+    transform: translateY(1px);
+}
 
-    #gameArea::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        border: 1px solid rgba(0, 234, 255, 0.35);
-        box-shadow: 0 0 25px rgba(0, 234, 255, 0.25);
-        pointer-events: none;
-    }
+/* Overlay */
+.overlay-message {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 4;
+    pointer-events: none;
+}
+.overlay-message-inner {
+    background: rgba(5, 10, 25, 0.9);
+    border: 1px solid rgba(0, 234, 255, 0.5);
+    box-shadow: 0 0 20px rgba(0, 234, 255, 0.4);
+    padding: 18px 24px;
+    border-radius: 12px;
+    text-align: center;
+    max-width: 360px;
+}
+.overlay-title {
+    font-size: 18px;
+    margin-bottom: 6px;
+}
+.overlay-text {
+    font-size: 13px;
+    color: var(--text-muted);
+}
 
-    .game-inner {
-        position: absolute;
-        inset: 20px;
-    }
-
-    .cursor-neuro {
-        width: 14px;
-        height: 14px;
-        border-radius: 999px;
-        background: var(--accent);
-        box-shadow: 0 0 12px rgba(0, 234, 255, 0.9);
-        position: absolute;
-        pointer-events: none;
-        transform: translate(-50%, -50%);
-        z-index: 5;
-    }
-
-    .stim {
-        width: 56px;
-        height: 56px;
-        border-radius: 999px;
-        background: radial-gradient(circle at top, #1f4060 0, #0b1724 60%);
-        border: 1px solid rgba(0, 234, 255, 0.7);
-        color: var(--text-main);
-        font-size: 22px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: absolute;
-        cursor: pointer;
-        box-shadow: 0 0 12px rgba(0, 234, 255, 0.4);
-        transition: transform 0.1s, box-shadow 0.15s, background 0.15s;
-    }
-
-    .stim:hover {
-        transform: scale(1.05);
-        box-shadow: 0 0 18px rgba(0, 234, 255, 0.7);
-    }
-
-    .stim.correct {
-        background: radial-gradient(circle at top, #1b5e20 0, #0b2410 60%);
-        border-color: var(--success);
-        box-shadow: 0 0 16px rgba(0, 255, 149, 0.8);
-    }
-
-    .stim.error {
-        background: radial-gradient(circle at top, #7f1d32 0, #2b0b14 60%);
-        border-color: var(--danger);
-        box-shadow: 0 0 16px rgba(255, 75, 129, 0.8);
-    }
-
-    .vs-stim {
-        width: 32px;
-        height: 32px;
-        border-radius: 6px;
-        border: 1px solid rgba(0, 234, 255, 0.5);
-        box-shadow: 0 0 10px rgba(0, 234, 255, 0.4);
-        position: absolute;
-        cursor: pointer;
-        transition: transform 0.1s, box-shadow 0.15s;
-    }
-
-    .vs-stim:hover {
-        transform: scale(1.08);
-        box-shadow: 0 0 16px rgba(0, 234, 255, 0.7);
-    }
-
-    .vs-target {
-        box-shadow: 0 0 16px rgba(0, 255, 149, 0.9);
-    }
-
-    .vs-correct {
-        outline: 2px solid var(--success);
-    }
-
-    .vs-error {
-        outline: 2px solid var(--danger);
-    }
-
-    .overlay-message {
-        position: absolute;
-        inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 4;
-        pointer-events: none;
-    }
-
-    .overlay-message-inner {
-        background: rgba(5, 10, 25, 0.9);
-        border: 1px solid rgba(0, 234, 255, 0.5);
-        box-shadow: 0 0 20px rgba(0, 234, 255, 0.4);
-        padding: 18px 24px;
-        border-radius: 12px;
-        text-align: center;
-        max-width: 360px;
-    }
-
-    .overlay-title {
-        font-size: 18px;
-        margin-bottom: 6px;
-    }
-
-    .overlay-text {
-        font-size: 13px;
-        color: var(--text-muted);
-    }
-
-    .flex { display: flex; }
-    .justify-between { justify-content: space-between; }
-    .items-center { align-items: center; }
+.flex { display: flex; }
+.justify-between { justify-content: space-between; }
+.items-center { align-items: center; }
 </style>
 </head>
 <body>
@@ -350,6 +405,7 @@
             <select id="gameSelector" class="select-input">
                 <option value="mouse">Mouse Challenge</option>
                 <option value="visual">Visual Search Difícil</option>
+                <option value="taskswitch">Task Switching Neurotech</option>
             </select>
         </div>
 
@@ -358,7 +414,7 @@
         <button id="startBtn" class="btn">Iniciar sesión de juego</button>
 
         <div class="small-text" id="hintText">
-            Consejo: prueba primero con modo de cursor normal y pocos estímulos. Luego aumenta dificultad.
+            Consejo: prueba primero con cursor normal y pocos estímulos. Luego aumenta dificultad.
         </div>
 
         <div class="data-export">
@@ -375,7 +431,7 @@
 
 <script>
 // =========================
-// === GAME CORE ===========
+// GAME CORE
 // =========================
 
 const GameCore = {
@@ -424,9 +480,7 @@ const GameCore = {
 
     nextTrial() {
         this.trial++;
-        if (this.game.trial) {
-            this.game.trial();
-        }
+        if (this.game.trial) this.game.trial();
     },
 
     end() {
@@ -438,14 +492,13 @@ const GameCore = {
 };
 
 // =========================
-// === UI ENGINE ===========
+// UI ENGINE
 // =========================
 
 const UIEngine = {
     renderParams(params) {
         const panel = document.getElementById("paramsPanel");
         panel.innerHTML = "";
-
         for (const key in params) {
             const p = params[key];
             const wrapper = document.createElement("div");
@@ -508,7 +561,6 @@ const UIEngine = {
         const inner = document.getElementById("gameInner");
         const overlay = document.createElement("div");
         overlay.className = "overlay-message";
-
         overlay.innerHTML = `
             <div class="overlay-message-inner">
                 <div class="overlay-title">${title}</div>
@@ -516,7 +568,6 @@ const UIEngine = {
             </div>
         `;
         inner.appendChild(overlay);
-
         setTimeout(() => {
             if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
         }, 2500);
@@ -524,7 +575,7 @@ const UIEngine = {
 };
 
 // =========================
-// === CURSOR ENGINE =======
+// CURSOR ENGINE
 // =========================
 
 const CursorEngine = {
@@ -574,14 +625,23 @@ const CursorEngine = {
 };
 
 // =========================
-// === STIMULUS ENGINE =====
+// STIMULUS ENGINE
 // =========================
 
 const StimulusEngine = {
-    createStim(content, x, y) {
+    createStim(content, x, y, colorVariant = 0) {
         const area = document.getElementById("gameInner");
         const el = document.createElement("div");
         el.className = "stim";
+        const palette = [
+            { bg: "radial-gradient(circle at top, #1f4060 0, #0b1724 60%)", glow: "rgba(0,234,255,0.6)" },
+            { bg: "radial-gradient(circle at top, #ffe066 0, #ffdd33 60%)", glow: "rgba(255,224,102,0.7)" },
+            { bg: "radial-gradient(circle at top, #ff4b81 0, #7f1d32 60%)", glow: "rgba(255,75,129,0.7)" },
+            { bg: "radial-gradient(circle at top, #00ff95 0, #0b2410 60%)", glow: "rgba(0,255,149,0.7)" }
+        ];
+        const c = palette[colorVariant % palette.length];
+        el.style.background = c.bg;
+        el.style.boxShadow = `0 0 12px ${c.glow}`;
         el.style.left = x + "px";
         el.style.top = y + "px";
         el.textContent = content;
@@ -603,7 +663,7 @@ const StimulusEngine = {
 };
 
 // =========================
-// === GAME MODULE: MouseChallenge ===
+// GAME: Mouse Challenge
 // =========================
 
 const MouseChallenge = {
@@ -648,13 +708,11 @@ const MouseChallenge = {
     placeStimuli() {
         const n = this.params.nStim;
         const positions = StimulusEngine.randomPositions(n);
-        const area = document.getElementById("gameInner");
-
         this.stimElements = [];
 
         for (let i = 1; i <= n; i++) {
             const pos = positions[i - 1];
-            const stim = StimulusEngine.createStim(i, pos.x, pos.y);
+            const stim = StimulusEngine.createStim(i, pos.x, pos.y, i);
             stim.dataset.index = i;
             stim._x = pos.x;
             stim._y = pos.y;
@@ -731,12 +789,12 @@ const MouseChallenge = {
     },
 
     trial() {
-        // El avance de "trial" está ligado a los clics correctos.
+        // Avance implícito por clics correctos
     }
 };
 
 // =========================
-// === GAME MODULE: Visual Search Difícil ===
+// GAME: Visual Search Difícil
 // =========================
 
 const VisualSearchHard = {
@@ -905,20 +963,16 @@ const VisualSearchHard = {
     handleClick(isTarget, ev, el) {
         if (this.clicked) return;
         this.clicked = true;
-        const rt = performance.now() - this.trialStartTime;
 
-        const rect = el.getBoundingClientRect();
         const areaRect = document.getElementById("gameInner").getBoundingClientRect();
+        const rect = el.getBoundingClientRect();
         const clickX = rect.left + rect.width / 2 - areaRect.left;
         const clickY = rect.top + rect.height / 2 - areaRect.top;
 
         const correct = isTarget && this.targetPresent;
 
-        if (correct) {
-            el.classList.add("vs-correct");
-        } else {
-            el.classList.add("vs-error");
-        }
+        if (correct) el.classList.add("vs-correct");
+        else el.classList.add("vs-error");
 
         this.logTrial(this.targetPresent, correct, clickX, clickY, false, true);
 
@@ -930,11 +984,8 @@ const VisualSearchHard = {
     handleAbsentClick() {
         if (this.clicked) return;
         this.clicked = true;
-        const rt = performance.now() - this.trialStartTime;
-
         const correct = !this.targetPresent;
         this.logTrial(this.targetPresent, correct, null, null, false, false, true);
-
         setTimeout(() => {
             this.nextVisualTrial();
         }, 300);
@@ -955,13 +1006,167 @@ const VisualSearchHard = {
         });
     },
 
+    trial() {}
+};
+
+// =========================
+// GAME: Task Switching Neurotech
+// =========================
+
+const TaskSwitching = {
+    name: "TaskSwitching",
+    defaultParams: {
+        nTrials: { label: "Número de trials", value: 30, min: 10, max: 100 },
+        switchProb: { label: "Probabilidad de cambio de regla (%)", value: 40, min: 0, max: 100 },
+        trialTimeLimit: { label: "Tiempo límite por trial (ms)", value: 5000, min: 1000, max: 15000 }
+    },
+
+    trialIndex: 0,
+    currentRule: "shape", // "shape" o "color"
+    trialStartTime: 0,
+    trialTimeoutId: null,
+    clicked: false,
+
+    start() {
+        this.params = UIEngine.getParams();
+        this.trialIndex = 0;
+        this.currentRule = Math.random() < 0.5 ? "shape" : "color";
+        UIEngine.clearGameArea();
+        this.nextTrialInternal();
+    },
+
+    nextTrialInternal() {
+        if (this.trialTimeoutId) {
+            clearTimeout(this.trialTimeoutId);
+            this.trialTimeoutId = null;
+        }
+
+        if (this.trialIndex >= this.params.nTrials) {
+            GameCore.end();
+            return;
+        }
+
+        this.trialIndex++;
+        GameCore.nextTrial();
+        this.clicked = false;
+
+        const inner = document.getElementById("gameInner");
+        inner.innerHTML = "";
+
+        // Decide si cambiamos de regla
+        if (this.trialIndex > 1) {
+            const switchProb = this.params.switchProb / 100;
+            if (Math.random() < switchProb) {
+                this.currentRule = this.currentRule === "shape" ? "color" : "shape";
+            }
+        }
+
+        const frame = document.createElement("div");
+        frame.className = "ts-frame";
+        if (this.currentRule === "color") frame.classList.add("color-rule");
+
+        const stim = document.createElement("div");
+        stim.className = "ts-stim";
+
+        const shapes = ["circle", "square"];
+        const colors = ["cyan", "magenta"];
+
+        const shape = shapes[Math.floor(Math.random() * shapes.length)];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+
+        if (shape === "square") stim.classList.add("square");
+
+        if (color === "cyan") {
+            stim.style.background = "#00eaff";
+            stim.style.boxShadow = "0 0 16px rgba(0,234,255,0.8)";
+        } else {
+            stim.style.background = "#ff4b81";
+            stim.style.boxShadow = "0 0 16px rgba(255,75,129,0.8)";
+        }
+
+        frame.appendChild(stim);
+
+        const container = document.createElement("div");
+        container.className = "ts-stim-container";
+        container.appendChild(frame);
+        inner.appendChild(container);
+
+        const buttons = document.createElement("div");
+        buttons.className = "ts-buttons";
+
+        const btn1 = document.createElement("button");
+        const btn2 = document.createElement("button");
+        btn1.className = "ts-btn";
+        btn2.className = "ts-btn";
+
+        if (this.currentRule === "shape") {
+            btn1.textContent = "Círculo";
+            btn2.textContent = "Cuadrado";
+        } else {
+            btn1.textContent = "Cian";
+            btn2.textContent = "Magenta";
+        }
+
+        buttons.appendChild(btn1);
+        buttons.appendChild(btn2);
+        inner.appendChild(buttons);
+
+        const correctResponse = this.currentRule === "shape"
+            ? (shape === "circle" ? "Círculo" : "Cuadrado")
+            : (color === "cyan" ? "Cian" : "Magenta");
+
+        const handleResponse = (respText) => {
+            if (this.clicked) return;
+            this.clicked = true;
+            const rt = performance.now() - this.trialStartTime;
+            const correct = (respText === correctResponse);
+
+            GameCore.log({
+                rule: this.currentRule,
+                shape,
+                color,
+                response: respText,
+                correct,
+                rt: Math.round(rt),
+                switchProb: this.params.switchProb
+            });
+
+            setTimeout(() => {
+                this.nextTrialInternal();
+            }, 200);
+        };
+
+        btn1.addEventListener("click", () => handleResponse(btn1.textContent));
+        btn2.addEventListener("click", () => handleResponse(btn2.textContent));
+
+        this.trialStartTime = performance.now();
+
+        if (this.params.trialTimeLimit > 0) {
+            this.trialTimeoutId = setTimeout(() => {
+                if (!this.clicked) {
+                    GameCore.log({
+                        rule: this.currentRule,
+                        shape,
+                        color,
+                        response: null,
+                        correct: false,
+                        rt: null,
+                        timeout: true,
+                        switchProb: this.params.switchProb
+                    });
+                    this.nextTrialInternal();
+                }
+            }, this.params.trialTimeLimit);
+        }
+    },
+
     trial() {
-        // Gestionado internamente por nextVisualTrial
+        // Gestionado internamente
     }
 };
 
 // =========================
-// === EXPORT UTILITIES ====
+// EXPORT UTILITIES
 // =========================
 
 function exportJSON(data) {
@@ -989,7 +1194,7 @@ function exportCSV(data) {
 }
 
 // =========================
-// === INIT & UI BINDINGS ==
+// INIT & UI BINDINGS
 // =========================
 
 const gameSelector = document.getElementById("gameSelector");
@@ -1004,11 +1209,16 @@ function setGameFromSelector() {
         gameSubtitle.textContent = "Presiona los estímulos en orden, con el cursor alterado.";
         hintText.textContent = "Consejo: empieza con cursor normal y pocos estímulos. Luego prueba modos invertido y movimiento.";
         GameCore.setGame(MouseChallenge);
-    } else {
+    } else if (val === "visual") {
         gameTitle.textContent = "Visual Search Difícil";
         gameSubtitle.textContent = "Encuentra el objetivo casi idéntico entre muchos distractores.";
         hintText.textContent = "Consejo: observa con calma al principio. La similitud alta exige discriminación muy fina.";
         GameCore.setGame(VisualSearchHard);
+    } else {
+        gameTitle.textContent = "Task Switching Neurotech";
+        gameSubtitle.textContent = "Cambia de regla entre forma y color según el marco.";
+        hintText.textContent = "Consejo: fíjate primero en el color del marco. Luego responde rápido según la regla.";
+        GameCore.setGame(TaskSwitching);
     }
 }
 
@@ -1023,6 +1233,3 @@ document.getElementById("exportCsvBtn").onclick = () => exportCSV(GameCore.data)
 
 </body>
 </html>
-
-
-
