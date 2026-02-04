@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>NeuroPlay – Mouse Challenge & Visual Search</title>
+
+<style>
+    :root {
+        --bg-main: #050814;
+        --bg-panel: #0b1020;
+        --bg-game: #050814;
+        --accent: #00eaff;
+        --accent-soft: #00bcd4;
+        --text-main: #e5f7ff;
+        --text-muted: #7f9bb3;
+        --danger: #ff4b81;
+        --success: #00ff95;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+        margin: 0;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+        background: radial-gradient(circle at top, #0b1530 0, #02030a 55%, #000000 100%);
+        color: var(--text-main);
+    }
+
+    header {
+        width: 100%;
+        background: rgba(5, 10, 25, 0.95);
+        border-bottom: 1px solid rgba(0, 234, 255, 0.25);
+        box-shadow: 0 0 20px rgba(0, 234, 255, 0.15);
+        padding: 12px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: relative;
+        z-index: 10;
+    }
+
+    .title {
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--accent);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .logo-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: var(--accent);
+        box-shadow: 0 0 10px var(--accent);
+    }
+
+    .status {
+        font-size: 14px;
+        color: var(--text-muted);
+    }
+
+    .status span {
+        color: var(--accent-soft);
+        font-weight: 600;
+    }
+
+    .main-layout {
+        display: flex;
+        height: calc(100vh - 60px);
+    }
+
+    aside {
+        width: 340px;
+        background: linear-gradient(180deg, #050814 0%, #050814 40%, #050814 100%);
+        border-right: 1px solid rgba(0, 234, 255, 0.2);
+        box-shadow: 10px 0 30px rgba(0, 0, 0, 0.6);
+        padding: 16px 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .panel-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
+
+    .panel-subtitle {
+        font-size: 12px;
+        color: var(--text-muted);
+        margin-bottom: 12px;
+    }
+
+    .param-group { margin-bottom: 10px; }
+
+    .param-label {
+        display: block;
+        font-size: 13px;
+        margin-bottom: 4px;
+    }
+
+    .param-input, .select-input {
+        width: 100%;
+        padding: 6px 8px;
+        border-radius: 6px;
+        border: 1px solid rgba(127, 155, 179, 0.6);
+        background: rgba(5, 10, 25, 0.8);
+        color: var(--text-main);
+        font-size: 13px;
+        outline: none;
+        transition: border 0.15s, box-shadow 0.15s, background 0.15s;
+    }
+
+    .param-input:focus, .select-input:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 8px rgba(0, 234, 255, 0.4);
+        background: rgba(5, 10, 25, 0.95);
+    }
+
+    .btn {
+        width: 100%;
+        padding: 10px 12px;
+        border-radius: 999px;
+        border: 1px solid var(--accent);
+        background: radial-gradient(circle at top, #10253a 0, #050814 60%);
+        color: var(--text-main);
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        cursor: pointer;
+        margin-top: 8px;
+        transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+    }
+
+    .btn:hover {
+        background: radial-gradient(circle at top, #16324a 0, #050814 60%);
+        box-shadow: 0 0 12px rgba(0, 234, 255, 0.6);
+        transform: translateY(-1px);
+    }
+
+    .btn:active {
+        transform: translateY(1px);
+        box-shadow: 0 0 6px rgba(0, 234, 255, 0.4);
+    }
+
+    .small-text {
+        font-size: 11px;
+        color: var(--text-muted);
+        margin-top: 6px;
+        line-height: 1.4;
+    }
+
+    .data-export {
+        margin-top: auto;
+        padding-top: 10px;
+        border-top: 1px solid rgba(0, 234, 255, 0.15);
+        font-size: 12px;
+        color: var(--text-muted);
+    }
+
+    .data-export button {
+        margin-top: 6px;
+        width: 100%;
+        padding: 6px 8px;
+        border-radius: 6px;
+        border: 1px solid rgba(0, 234, 255, 0.4);
+        background: rgba(5, 10, 25, 0.9);
+        color: var(--accent-soft);
+        font-size: 12px;
+        cursor: pointer;
+        transition: background 0.15s, box-shadow 0.15s;
+    }
+
+    .data-export button:hover {
+        background: rgba(10, 20, 40, 0.95);
+        box-shadow: 0 0 8px rgba(0, 234, 255, 0.4);
+    }
+
+    #gameArea {
+        flex: 1;
+        position: relative;
+        background: radial-gradient(circle at center, #050814 0, #02030a 55%, #000000 100%);
+        overflow: hidden;
+    }
+
+    #gameArea::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+            linear-gradient(#10192b 1px, transparent 1px),
+            linear-gradient(90deg, #10192b 1px, transparent 1px);
+        background-size: 40px 40px;
+        opacity: 0.35;
+        pointer-events: none;
+    }
+
+    #gameArea::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border: 1px solid rgba(0, 234, 255, 0.35);
+        box-shadow: 0 0 25px rgba(0, 234, 255, 0.25);
+        pointer-events: none;
+    }
+
+    .game-inner {
+        position: absolute;
+        inset: 20px;
+    }
+
+    .cursor-neuro {
+        width: 14px;
+        height: 14px;
+        border-radius: 999px;
+        background: var(--accent);
+        box-shadow: 0 0 12px rgba(0, 234, 255, 0.9);
+        position: absolute;
+        pointer-events: none;
+        transform: translate(-50%, -50%);
+        z-index: 5;
+    }
+
+    .stim {
+        width: 56px;
+        height: 56px;
+        border-radius: 999px;
+        background: radial-gradient(circle at top, #1f4060 0, #0b1724 60%);
+        border: 1px solid rgba(0, 234, 255, 0.7);
+        color: var(--text-main);
+        font-size: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        cursor: pointer;
+        box-shadow: 0 0 12px rgba(0, 234, 255, 0.4);
+        transition: transform 0.1s, box-shadow 0.15s, background 0.15s;
+    }
+
+    .stim:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 18px rgba(0, 234, 255, 0.7);
+    }
+
+    .stim.correct {
+        background: radial-gradient(circle at top, #1b5e20 0, #0b2410 60%);
+        border-color: var(--success);
+        box-shadow: 0 0 16px rgba(0, 255, 149, 0.8);
+    }
+
+    .stim.error {
+        background: radial-gradient(circle at top, #7f1d32 0, #2b0b14 60%);
+        border-color: var(--danger);
+        box-shadow: 0 0 16px rgba(255, 75, 129, 0.8);
+    }
+
+    .vs-stim {
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        border: 1px solid rgba(0, 234, 255, 0.5);
+        box-shadow: 0 0 10px rgba(0, 234, 255, 0.4);
+        position: absolute;
+        cursor: pointer;
+        transition: transform 0.1s, box-shadow 0.15s;
+    }
+
+    .vs-stim:hover {
+        transform: scale(1.08);
+        box-shadow: 0 0 16px rgba(0, 234, 255, 0.7);
+    }
+
+    .vs-target {
+        box-shadow: 0 0 16px rgba(0, 255, 149, 0.9);
+    }
+
+    .vs-correct {
+        outline: 2px solid var(--success);
+    }
+
+    .vs-error {
+        outline: 2px solid var(--danger);
+    }
+
+    .overlay-message {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 4;
+        pointer-events: none;
+    }
+
+    .overlay-message-inner {
+        background: rgba(5, 10, 25, 0.9);
+        border: 1px solid rgba(0, 234, 255, 0.5);
+        box-shadow: 0 0 20px rgba(0, 234, 255, 0.4);
+        padding: 18px 24px;
+        border-radius: 12px;
+        text-align: center;
+        max-width: 360px;
+    }
+
+    .overlay-title {
+        font-size: 18px;
+        margin-bottom: 6px;
+    }
+
+    .overlay-text {
+        font-size: 13px;
+        color: var(--text-muted);
+    }
+
+    .flex { display: flex; }
+    .justify-between { justify-content: space-between; }
+    .items-center { align-items: center; }
+</style>
+</head>
+<body>
+
+<header>
+    <div class="title">
+        <span class="logo-dot"></span>
+        <span>NEUROPLAY</span>
+    </div>
+    <div id="status" class="status">
+        Estado: <span>En reposo</span>
+    </div>
+</header>
+
+<div class="main-layout">
+    <aside>
+        <div>
+            <div class="panel-title" id="gameTitle">Mouse Challenge</div>
+            <div class="panel-subtitle" id="gameSubtitle">
+                Presiona los estímulos en orden, con el cursor alterado.
+            </div>
+        </div>
+
+        <div class="param-group">
+            <label class="param-label">Juego</label>
+            <select id="gameSelector" class="select-input">
+                <option value="mouse">Mouse Challenge</option>
+                <option value="visual">Visual Search Difícil</option>
+            </select>
+        </div>
+
+        <div id="paramsPanel"></div>
+
+        <button id="startBtn" class="btn">Iniciar sesión de juego</button>
+
+        <div class="small-text" id="hintText">
+            Consejo: prueba primero con modo de cursor normal y pocos estímulos. Luego aumenta dificultad.
+        </div>
+
+        <div class="data-export">
+            <div>Datos de investigación</div>
+            <button id="exportJsonBtn">Exportar JSON</button>
+            <button id="exportCsvBtn">Exportar CSV</button>
+        </div>
+    </aside>
+
+    <main id="gameArea">
+        <div class="game-inner" id="gameInner"></div>
+    </main>
+</div>
+
+<script>
+// =========================
+// === GAME CORE ===========
+// =========================
+
+const GameCore = {
+    state: "idle",
+    trial: 0,
+    data: [],
+    params: {},
+    game: null,
+
+    init(gameModule) {
+        this.game = gameModule;
+        this.params = structuredClone(gameModule.defaultParams);
+        UIEngine.renderParams(this.params);
+        UIEngine.setStatus("En reposo");
+    },
+
+    setGame(gameModule) {
+        this.game = gameModule;
+        this.params = structuredClone(gameModule.defaultParams);
+        this.state = "idle";
+        this.trial = 0;
+        this.data = [];
+        UIEngine.clearGameArea();
+        UIEngine.renderParams(this.params);
+        UIEngine.setStatus("En reposo");
+    },
+
+    start() {
+        if (!this.game) return;
+        this.state = "running";
+        this.trial = 0;
+        this.data = [];
+        UIEngine.clearGameArea();
+        UIEngine.setStatus("En marcha");
+        this.game.start();
+    },
+
+    log(entry) {
+        this.data.push({
+            trial: this.trial,
+            timestamp: performance.now(),
+            game: this.game.name,
+            ...entry
+        });
+    },
+
+    nextTrial() {
+        this.trial++;
+        if (this.game.trial) {
+            this.game.trial();
+        }
+    },
+
+    end() {
+        this.state = "finished";
+        UIEngine.setStatus("Finalizado");
+        UIEngine.showOverlay("Sesión completada", "Los datos están disponibles para exportación en el panel lateral.");
+        console.log("Datos NeuroPlay:", this.data);
+    }
+};
+
+// =========================
+// === UI ENGINE ===========
+// =========================
+
+const UIEngine = {
+    renderParams(params) {
+        const panel = document.getElementById("paramsPanel");
+        panel.innerHTML = "";
+
+        for (const key in params) {
+            const p = params[key];
+            const wrapper = document.createElement("div");
+            wrapper.className = "param-group";
+
+            const label = document.createElement("label");
+            label.className = "param-label";
+            label.textContent = p.label;
+
+            let input;
+            if (p.type === "select") {
+                input = document.createElement("select");
+                input.className = "select-input";
+                input.id = "param_" + key;
+                p.options.forEach((opt, idx) => {
+                    const o = document.createElement("option");
+                    o.value = idx;
+                    o.textContent = opt;
+                    if (idx === p.value) o.selected = true;
+                    input.appendChild(o);
+                });
+            } else {
+                input = document.createElement("input");
+                input.type = "number";
+                input.className = "param-input";
+                input.id = "param_" + key;
+                input.value = p.value;
+                if (p.min !== undefined) input.min = p.min;
+                if (p.max !== undefined) input.max = p.max;
+            }
+
+            wrapper.appendChild(label);
+            wrapper.appendChild(input);
+            panel.appendChild(wrapper);
+        }
+    },
+
+    getParams() {
+        const out = {};
+        for (const key in GameCore.params) {
+            const p = GameCore.params[key];
+            const el = document.getElementById("param_" + key);
+            if (!el) continue;
+            out[key] = Number(el.value);
+        }
+        return out;
+    },
+
+    setStatus(text) {
+        const statusEl = document.getElementById("status");
+        statusEl.innerHTML = `Estado: <span>${text}</span>`;
+    },
+
+    clearGameArea() {
+        const inner = document.getElementById("gameInner");
+        inner.innerHTML = "";
+    },
+
+    showOverlay(title, text) {
+        const inner = document.getElementById("gameInner");
+        const overlay = document.createElement("div");
+        overlay.className = "overlay-message";
+
+        overlay.innerHTML = `
+            <div class="overlay-message-inner">
+                <div class="overlay-title">${title}</div>
+                <div class="overlay-text">${text}</div>
+            </div>
+        `;
+        inner.appendChild(overlay);
+
+        setTimeout(() => {
+            if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+        }, 2500);
+    }
+};
+
+// =========================
+// === CURSOR ENGINE =======
+// =========================
+
+const CursorEngine = {
+    mode: "normal",
+    cursorEl: null,
+    active: false,
+
+    init() {
+        const inner = document.getElementById("gameInner");
+        this.cursorEl = document.createElement("div");
+        this.cursorEl.className = "cursor-neuro";
+        inner.appendChild(this.cursorEl);
+        this.active = true;
+        document.addEventListener("mousemove", this._onMove);
+    },
+
+    _onMove(e) {
+        if (!CursorEngine.active) return;
+        const area = document.getElementById("gameInner");
+        const rect = area.getBoundingClientRect();
+        let x = e.clientX - rect.left;
+        let y = e.clientY - rect.top;
+
+        if (CursorEngine.mode === "inverted") {
+            x = rect.width - x;
+            y = rect.height - y;
+        } else if (CursorEngine.mode === "fast") {
+            x = (x - rect.width / 2) * 1.4 + rect.width / 2;
+        } else if (CursorEngine.mode === "slow") {
+            x = (x - rect.width / 2) * 0.6 + rect.width / 2;
+        } else if (CursorEngine.mode === "jitter") {
+            x += (Math.random() - 0.5) * 25;
+            y += (Math.random() - 0.5) * 25;
+        }
+
+        CursorEngine.cursorEl.style.left = x + "px";
+        CursorEngine.cursorEl.style.top = y + "px";
+    },
+
+    destroy() {
+        this.active = false;
+        if (this.cursorEl && this.cursorEl.parentNode) {
+            this.cursorEl.parentNode.removeChild(this.cursorEl);
+        }
+        document.removeEventListener("mousemove", this._onMove);
+    }
+};
+
+// =========================
+// === STIMULUS ENGINE =====
+// =========================
+
+const StimulusEngine = {
+    createStim(content, x, y) {
+        const area = document.getElementById("gameInner");
+        const el = document.createElement("div");
+        el.className = "stim";
+        el.style.left = x + "px";
+        el.style.top = y + "px";
+        el.textContent = content;
+        area.appendChild(el);
+        return el;
+    },
+
+    randomPositions(n, margin = 70) {
+        const area = document.getElementById("gameInner");
+        const rect = area.getBoundingClientRect();
+        const positions = [];
+        for (let i = 0; i < n; i++) {
+            const x = Math.random() * (rect.width - margin * 2) + margin;
+            const y = Math.random() * (rect.height - margin * 2) + margin;
+            positions.push({ x, y });
+        }
+        return positions;
+    }
+};
+
+// =========================
+// === GAME MODULE: MouseChallenge ===
+// =========================
+
+const MouseChallenge = {
+    name: "MouseChallenge",
+    defaultParams: {
+        nStim: { label: "Número de estímulos", value: 6, min: 3, max: 20 },
+        cursorMode: { 
+            label: "Modo del cursor", 
+            value: 0,
+            type: "select",
+            options: ["Normal", "Invertido", "Rápido", "Lento", "Jitter"]
+        },
+        stimMovement: {
+            label: "Movimiento de estímulos",
+            value: 0,
+            type: "select",
+            options: ["Ninguno", "Aleatorio suave", "Sinusoidal"]
+        }
+    },
+
+    currentTarget: 1,
+    stimElements: [],
+    startTime: 0,
+    movementActive: false,
+
+    start() {
+        const p = UIEngine.getParams();
+        this.params = p;
+
+        const modes = ["normal", "inverted", "fast", "slow", "jitter"];
+        CursorEngine.mode = modes[p.cursorMode] || "normal";
+        CursorEngine.init();
+
+        this.currentTarget = 1;
+        this.stimElements = [];
+        this.movementActive = false;
+        UIEngine.clearGameArea();
+        this.placeStimuli();
+        GameCore.nextTrial();
+    },
+
+    placeStimuli() {
+        const n = this.params.nStim;
+        const positions = StimulusEngine.randomPositions(n);
+        const area = document.getElementById("gameInner");
+
+        this.stimElements = [];
+
+        for (let i = 1; i <= n; i++) {
+            const pos = positions[i - 1];
+            const stim = StimulusEngine.createStim(i, pos.x, pos.y);
+            stim.dataset.index = i;
+            stim._x = pos.x;
+            stim._y = pos.y;
+
+            stim.addEventListener("click", (ev) => {
+                this.handleClick(i, stim, ev);
+            });
+
+            this.stimElements.push(stim);
+        }
+
+        this.startTime = performance.now();
+
+        if (this.params.stimMovement > 0) {
+            this.movementActive = true;
+            this.updateStimuli();
+        }
+    },
+
+    updateStimuli() {
+        if (!this.movementActive) return;
+        const mode = this.params.stimMovement;
+        const t = performance.now() / 1000;
+
+        this.stimElements.forEach((stim, i) => {
+            if (!stim.parentNode) return;
+            if (mode === 1) {
+                const dx = Math.sin(t + i) * 10;
+                const dy = Math.cos(t * 1.2 + i) * 10;
+                stim.style.left = (stim._x + dx) + "px";
+                stim.style.top  = (stim._y + dy) + "px";
+            } else if (mode === 2) {
+                const dx = Math.sin(t * 2 + i) * 20;
+                stim.style.left = (stim._x + dx) + "px";
+            }
+        });
+
+        requestAnimationFrame(() => this.updateStimuli());
+    },
+
+    handleClick(n, stim, ev) {
+        const rt = performance.now() - this.startTime;
+        const isCorrect = (n === this.currentTarget);
+
+        GameCore.log({
+            target: this.currentTarget,
+            clicked: n,
+            rt: Math.round(rt),
+            cursorMode: CursorEngine.mode,
+            stimMovement: this.params.stimMovement,
+            error: !isCorrect
+        });
+
+        if (isCorrect) {
+            stim.classList.add("correct");
+            setTimeout(() => {
+                if (stim.parentNode) stim.parentNode.removeChild(stim);
+            }, 120);
+            this.currentTarget++;
+
+            if (this.currentTarget > this.params.nStim) {
+                this.movementActive = false;
+                CursorEngine.destroy();
+                GameCore.end();
+            } else {
+                this.startTime = performance.now();
+            }
+        } else {
+            stim.classList.add("error");
+            setTimeout(() => {
+                stim.classList.remove("error");
+            }, 200);
+        }
+    },
+
+    trial() {
+        // El avance de "trial" está ligado a los clics correctos.
+    }
+};
+
+// =========================
+// === GAME MODULE: Visual Search Difícil ===
+// =========================
+
+const VisualSearchHard = {
+    name: "VisualSearchHard",
+    defaultParams: {
+        nDistractors: { label: "Número de distractores", value: 60, min: 10, max: 200 },
+        similarity: { label: "Similitud con el objetivo (0-100)", value: 90, min: 50, max: 100 },
+        targetProb: { label: "Probabilidad target presente (%)", value: 70, min: 0, max: 100 },
+        trialTimeLimit: { label: "Tiempo límite por trial (ms)", value: 6000, min: 1000, max: 15000 }
+    },
+
+    trialIndex: 0,
+    maxTrials: 20,
+    targetPresent: false,
+    targetElement: null,
+    trialTimeoutId: null,
+    trialStartTime: 0,
+    clicked: false,
+
+    start() {
+        this.params = UIEngine.getParams();
+        this.trialIndex = 0;
+        UIEngine.clearGameArea();
+        this.nextVisualTrial();
+    },
+
+    nextVisualTrial() {
+        if (this.trialTimeoutId) {
+            clearTimeout(this.trialTimeoutId);
+            this.trialTimeoutId = null;
+        }
+
+        if (this.trialIndex >= this.maxTrials) {
+            GameCore.end();
+            return;
+        }
+
+        this.trialIndex++;
+        GameCore.nextTrial();
+        this.clicked = false;
+
+        const inner = document.getElementById("gameInner");
+        inner.innerHTML = "";
+
+        const areaRect = inner.getBoundingClientRect();
+        const n = this.params.nDistractors;
+        const similarity = this.params.similarity;
+        const targetProb = this.params.targetProb / 100;
+
+        this.targetPresent = Math.random() < targetProb;
+        this.targetElement = null;
+
+        const baseHue = 180;
+        const baseSat = 80;
+        const baseLight = 55;
+
+        const simFactor = similarity / 100;
+        const maxDelta = 20 * (1 - simFactor);
+
+        const size = 28;
+
+        const cols = Math.round(Math.sqrt(n + 1));
+        const rows = Math.round(Math.sqrt(n + 1));
+        const cellW = areaRect.width / cols;
+        const cellH = areaRect.height / rows;
+
+        let cells = [];
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                cells.push({ r, c });
+            }
+        }
+
+        const shuffle = arr => {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+        };
+        shuffle(cells);
+
+        let targetCell = null;
+        if (this.targetPresent) {
+            targetCell = cells.pop();
+        }
+
+        const createStim = (isTarget, cell) => {
+            const el = document.createElement("div");
+            el.className = "vs-stim";
+
+            const cx = (cell.c + 0.5) * cellW;
+            const cy = (cell.r + 0.5) * cellH;
+            el.style.left = (cx - size / 2) + "px";
+            el.style.top = (cy - size / 2) + "px";
+
+            let hue = baseHue;
+            let sat = baseSat;
+            let light = baseLight;
+            let angle = 45;
+
+            if (!isTarget) {
+                const dh = (Math.random() - 0.5) * maxDelta;
+                const ds = (Math.random() - 0.5) * maxDelta;
+                const dl = (Math.random() - 0.5) * maxDelta;
+                const da = (Math.random() - 0.5) * maxDelta;
+
+                hue += dh;
+                sat += ds;
+                light += dl;
+                angle += da;
+            }
+
+            el.style.background = `linear-gradient(${angle}deg, hsl(${hue}, ${sat}%, ${light}%) 0%, hsl(${hue}, ${sat - 10}%, ${light - 10}%) 100%)`;
+
+            if (isTarget) {
+                el.classList.add("vs-target");
+                this.targetElement = el;
+            }
+
+            el.addEventListener("click", (ev) => {
+                this.handleClick(isTarget, ev, el);
+            });
+
+            inner.appendChild(el);
+        };
+
+        if (this.targetPresent && targetCell) {
+            createStim(true, targetCell);
+        }
+
+        for (let i = 0; i < n; i++) {
+            if (!cells.length) break;
+            const cell = cells.pop();
+            createStim(false, cell);
+        }
+
+        const absentBtn = document.createElement("button");
+        absentBtn.textContent = "Target ausente";
+        absentBtn.style.position = "absolute";
+        absentBtn.style.right = "10px";
+        absentBtn.style.bottom = "10px";
+        absentBtn.style.padding = "6px 10px";
+        absentBtn.style.borderRadius = "999px";
+        absentBtn.style.border = "1px solid rgba(0,234,255,0.6)";
+        absentBtn.style.background = "rgba(5,10,25,0.9)";
+        absentBtn.style.color = "var(--text-main)";
+        absentBtn.style.fontSize = "11px";
+        absentBtn.style.cursor = "pointer";
+        absentBtn.addEventListener("click", () => {
+            this.handleAbsentClick();
+        });
+        inner.appendChild(absentBtn);
+
+        this.trialStartTime = performance.now();
+
+        if (this.params.trialTimeLimit > 0) {
+            this.trialTimeoutId = setTimeout(() => {
+                if (!this.clicked) {
+                    this.logTrial(false, false, null, null, true);
+                    this.nextVisualTrial();
+                }
+            }, this.params.trialTimeLimit);
+        }
+    },
+
+    handleClick(isTarget, ev, el) {
+        if (this.clicked) return;
+        this.clicked = true;
+        const rt = performance.now() - this.trialStartTime;
+
+        const rect = el.getBoundingClientRect();
+        const areaRect = document.getElementById("gameInner").getBoundingClientRect();
+        const clickX = rect.left + rect.width / 2 - areaRect.left;
+        const clickY = rect.top + rect.height / 2 - areaRect.top;
+
+        const correct = isTarget && this.targetPresent;
+
+        if (correct) {
+            el.classList.add("vs-correct");
+        } else {
+            el.classList.add("vs-error");
+        }
+
+        this.logTrial(this.targetPresent, correct, clickX, clickY, false, true);
+
+        setTimeout(() => {
+            this.nextVisualTrial();
+        }, 300);
+    },
+
+    handleAbsentClick() {
+        if (this.clicked) return;
+        this.clicked = true;
+        const rt = performance.now() - this.trialStartTime;
+
+        const correct = !this.targetPresent;
+        this.logTrial(this.targetPresent, correct, null, null, false, false, true);
+
+        setTimeout(() => {
+            this.nextVisualTrial();
+        }, 300);
+    },
+
+    logTrial(targetPresent, correct, clickX, clickY, timeout = false, clickedTarget = false, clickedAbsent = false) {
+        GameCore.log({
+            targetPresent,
+            correct,
+            clickedTarget,
+            clickedAbsent,
+            timeout,
+            rt: timeout ? null : Math.round(performance.now() - this.trialStartTime),
+            nDistractors: this.params.nDistractors,
+            similarity: this.params.similarity,
+            clickX,
+            clickY
+        });
+    },
+
+    trial() {
+        // Gestionado internamente por nextVisualTrial
+    }
+};
+
+// =========================
+// === EXPORT UTILITIES ====
+// =========================
+
+function exportJSON(data) {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "neuroplay_data.json";
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+function exportCSV(data) {
+    if (!data.length) return;
+    const headers = Object.keys(data[0]);
+    const rows = data.map(row => headers.map(h => row[h]).join(","));
+    const csv = [headers.join(","), ...rows].join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "neuroplay_data.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+// =========================
+// === INIT & UI BINDINGS ==
+// =========================
+
+const gameSelector = document.getElementById("gameSelector");
+const gameTitle = document.getElementById("gameTitle");
+const gameSubtitle = document.getElementById("gameSubtitle");
+const hintText = document.getElementById("hintText");
+
+function setGameFromSelector() {
+    const val = gameSelector.value;
+    if (val === "mouse") {
+        gameTitle.textContent = "Mouse Challenge";
+        gameSubtitle.textContent = "Presiona los estímulos en orden, con el cursor alterado.";
+        hintText.textContent = "Consejo: empieza con cursor normal y pocos estímulos. Luego prueba modos invertido y movimiento.";
+        GameCore.setGame(MouseChallenge);
+    } else {
+        gameTitle.textContent = "Visual Search Difícil";
+        gameSubtitle.textContent = "Encuentra el objetivo casi idéntico entre muchos distractores.";
+        hintText.textContent = "Consejo: observa con calma al principio. La similitud alta exige discriminación muy fina.";
+        GameCore.setGame(VisualSearchHard);
+    }
+}
+
+gameSelector.addEventListener("change", setGameFromSelector);
+
+GameCore.init(MouseChallenge);
+
+document.getElementById("startBtn").onclick = () => GameCore.start();
+document.getElementById("exportJsonBtn").onclick = () => exportJSON(GameCore.data);
+document.getElementById("exportCsvBtn").onclick = () => exportCSV(GameCore.data);
+</script>
+
+</body>
+</html>
+
+
+
